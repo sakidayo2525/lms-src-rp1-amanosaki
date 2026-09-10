@@ -334,4 +334,20 @@ public class StudentAttendanceService {
 		return messageUtil.getMessage(Constants.PROP_KEY_ATTENDANCE_UPDATE_NOTICE);
 	}
 
+	//過去日の未入力チェック
+	public Boolean notEnterCheck() {
+		//今日の日付の取得
+		Date today = new Date();
+
+		//未入力件数を取得
+		int count = tStudentAttendanceMapper.notEnterCount(null, null, today);
+
+		//件数が0より大きい場合はtrue、小さい場合はfalseを戻す
+		if (count > 0) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
 }
