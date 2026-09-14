@@ -1,6 +1,8 @@
 package jp.co.sss.lms.controller;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
 import jp.co.sss.lms.form.AttendanceForm;
+import jp.co.sss.lms.mapper.TStudentAttendanceMapper;
 import jp.co.sss.lms.service.StudentAttendanceService;
 import jp.co.sss.lms.util.Constants;
 
@@ -29,6 +32,8 @@ public class AttendanceController {
 	private StudentAttendanceService studentAttendanceService;
 	@Autowired
 	private LoginUserDto loginUserDto;
+	@Autowired
+	private TStudentAttendanceMapper tStudentAttendanceMapper;
 
 	/**
 	 * 勤怠管理画面 初期表示
@@ -40,13 +45,34 @@ public class AttendanceController {
 	 * @throws ParseException
 	 */
 	@RequestMapping(path = "/detail", method = RequestMethod.GET)
-	public String index(Model model) {
+	public String index(Model model) throws ParseException{
 
 		// 勤怠一覧の取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 
+		//現在より過去に未入力がないか確認
+		//フォーマットパターンに設定
+		//フォーマットは仕様に合わせて変更
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
+		//現在の日付を取得
+		Date today = new Date();
+		//現在の日付をフォーマットに合わせ、データ型に戻す
+		String fnd = sdf.format(today);
+		Date formatNowDate = sdf.parse(fnd); 
+
+		//過去日の未入力数をカウント
+		int count = tStudentAttendanceMapper.notEnterCount(loginUserDto.getLmsUserId(), (short) 0, formatNowDate);
+
+		//取得した未入力カウント数が0より大きい場合、trueを返し、過去日未入力確認ダイアログを表示
+		if (count > 0) {
+			model.addAttribute("hascount", true);
+			//それ以外はfalse
+		} else {
+			model.addAttribute("hascount", false);
+		}
 		return "attendance/detail";
 	}
 
