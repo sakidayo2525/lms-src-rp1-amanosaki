@@ -54,7 +54,6 @@ public class AttendanceController {
 
 		//現在より過去に未入力がないか確認
 		//フォーマットパターンに設定
-		//フォーマットは仕様に合わせて変更
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
 		//現在の日付を取得
@@ -63,15 +62,20 @@ public class AttendanceController {
 		String fnd = sdf.format(today);
 		Date formatNowDate = sdf.parse(fnd); 
 
-		//過去日の未入力数をカウント
-		int count = tStudentAttendanceMapper.notEnterCount(loginUserDto.getLmsUserId(), (short) 0, formatNowDate);
+		//過去日の未入力数をカウント、カウントオブジェクトにいれる
+		Integer count = tStudentAttendanceMapper.notEnterCount(loginUserDto.getLmsUserId(), (short) 0, formatNowDate);
 
+		//nullだった場合、0を代入する
+		if (count == null) {
+		    count = 0; 
+		}
+		
 		//取得した未入力カウント数が0より大きい場合、trueを返し、過去日未入力確認ダイアログを表示
 		if (count > 0) {
-			model.addAttribute("hascount", true);
+			model.addAttribute("notEnterFlg", true);
 			//それ以外はfalse
 		} else {
-			model.addAttribute("hascount", false);
+			model.addAttribute("notEnterFlg", false);
 		}
 		return "attendance/detail";
 	}

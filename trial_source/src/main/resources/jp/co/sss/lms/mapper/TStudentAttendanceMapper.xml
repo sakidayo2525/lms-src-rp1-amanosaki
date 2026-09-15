@@ -95,7 +95,7 @@
 	</update>
 
 	<select id="notEnterCount"
-		resultType="jp.co.sss.lms.entity.TStudentAttendance">
+		resultType="java.lang.Integer">
 		<![CDATA[ 
 		SELECT COUNT(*)
 		FROM t_student_attendance
