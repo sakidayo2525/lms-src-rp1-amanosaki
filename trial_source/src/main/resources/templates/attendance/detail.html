@@ -19,13 +19,13 @@
 	</th:block>
 
 	<h2>勤怠管理</h2>
-	
+
 	<!-- task.25 未入力ダイアログ -->
 	<script th:if="${notEnterFlg}">
 		//受け取った値が true だったらダイアログを表示する
 		alert("過去日の勤怠に未入力があります。");
 	</script>
-	
+
 	<!-- エラーメッセージ -->
 	<th:block th:if="${not #strings.isEmpty(error)}" id="error">
 		<ul style="padding-left: 0; list-style: none;">
