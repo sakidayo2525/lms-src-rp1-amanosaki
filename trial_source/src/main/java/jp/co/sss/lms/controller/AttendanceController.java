@@ -23,6 +23,7 @@ import jp.co.sss.lms.util.Constants;
  * 勤怠管理コントローラ
  * 
  * @author 東京ITスクール
+ * @author 天野沙紀
  */
 @Controller
 @RequestMapping("/attendance")
@@ -37,15 +38,15 @@ public class AttendanceController {
 
 	/**
 	 * 勤怠管理画面 初期表示
-	 * 
+	 * @author 天野沙紀 -Task.25
 	 * @param lmsUserId
 	 * @param courseId
 	 * @param model
-	 * @return 勤怠管理画面
 	 * @throws ParseException
+	 * @return 勤怠管理画面
 	 */
 	@RequestMapping(path = "/detail", method = RequestMethod.GET)
-	public String index(Model model) throws ParseException{
+	public String index(Model model) throws ParseException {
 
 		// 勤怠一覧の取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
@@ -53,23 +54,23 @@ public class AttendanceController {
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 
 		//現在より過去に未入力がないか確認
-		//フォーマットパターンに設定
+		//フォーマットパターンを設定
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
 		//現在の日付を取得
 		Date today = new Date();
 		//現在の日付をフォーマットに合わせ、データ型に戻す
 		String fnd = sdf.format(today);
-		Date formatNowDate = sdf.parse(fnd); 
+		Date formatNowDate = sdf.parse(fnd);
 
 		//過去日の未入力数をカウント、カウントオブジェクトにいれる
 		Integer count = tStudentAttendanceMapper.notEnterCount(loginUserDto.getLmsUserId(), (short) 0, formatNowDate);
 
 		//nullだった場合、0を代入する
 		if (count == null) {
-		    count = 0; 
+			count = 0;
 		}
-		
+
 		//取得した未入力カウント数が0より大きい場合、trueを返し、過去日未入力確認ダイアログを表示
 		if (count > 0) {
 			model.addAttribute("notEnterFlg", true);

@@ -334,8 +334,13 @@ public class StudentAttendanceService {
 		return messageUtil.getMessage(Constants.PROP_KEY_ATTENDANCE_UPDATE_NOTICE);
 	}
 
-	//過去日の未入力チェック
-	public Boolean notEnterCheck() throws ParseException{
+	/**過去日の未入力チェック
+	 * 
+	 * @author 天野沙紀 -Task.25
+	 * @throws ParseException
+	 * @return 未入力確認ダイアログ
+	 */
+	public Boolean notEnterCheck() throws ParseException {
 		//今日の日付の取得
 		Date today = new Date();
 
