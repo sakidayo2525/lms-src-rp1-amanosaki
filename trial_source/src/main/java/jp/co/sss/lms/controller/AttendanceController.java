@@ -1,8 +1,6 @@
 package jp.co.sss.lms.controller;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
 import jp.co.sss.lms.form.AttendanceForm;
-import jp.co.sss.lms.mapper.TStudentAttendanceMapper;
 import jp.co.sss.lms.service.StudentAttendanceService;
 import jp.co.sss.lms.util.Constants;
 
@@ -33,12 +30,9 @@ public class AttendanceController {
 	private StudentAttendanceService studentAttendanceService;
 	@Autowired
 	private LoginUserDto loginUserDto;
-	@Autowired
-	private TStudentAttendanceMapper tStudentAttendanceMapper;
-
+	
 	/**
 	 * 勤怠管理画面 初期表示
-	 * @author 天野沙紀 -Task.25
 	 * @param lmsUserId
 	 * @param courseId
 	 * @param model
@@ -53,31 +47,13 @@ public class AttendanceController {
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 
+		//天野沙紀 -Task.25
 		//現在より過去に未入力がないか確認
-		//フォーマットパターンを設定
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+		//サービスクラスからnotEnterCheckメソッドを呼び出す
+		Boolean notEnterFlg = studentAttendanceService.notEnterCheck();
+		//サービスクラスででた結果をスコープに保存
+		model.addAttribute("notEnterFlg" , notEnterFlg);
 
-		//現在の日付を取得
-		Date today = new Date();
-		//現在の日付をフォーマットに合わせ、データ型に戻す
-		String fnd = sdf.format(today);
-		Date formatNowDate = sdf.parse(fnd);
-
-		//過去日の未入力数をカウント、カウントオブジェクトにいれる
-		Integer count = tStudentAttendanceMapper.notEnterCount(loginUserDto.getLmsUserId(), (short) 0, formatNowDate);
-
-		//nullだった場合、0を代入する
-		if (count == null) {
-			count = 0;
-		}
-
-		//取得した未入力カウント数が0より大きい場合、trueを返し、過去日未入力確認ダイアログを表示
-		if (count > 0) {
-			model.addAttribute("notEnterFlg", true);
-			//それ以外はfalse
-		} else {
-			model.addAttribute("notEnterFlg", false);
-		}
 		return "attendance/detail";
 	}
 
