@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -223,23 +222,11 @@ public class StudentAttendanceService {
 		attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
 
 		//Task.26 天野 時間、分のプルダウン用のマップを生成
-		//時間マップ
-		LinkedHashMap<Integer, String> hourMap = new LinkedHashMap<>();
-		//時間マップに{null,""}を追加する
-		hourMap.put(null, "");
-		//[loop] 初期値i=0; i<24; i++ この24は24時間
-		for (int i = 0; i < 24; i++) {
-			//時間マップに{i,String.format("%02d", i)}を追加する。
-			hourMap.put(i, String.format("%02d", i));
-		}
+		// 勤怠FORM．時間マップ（選択肢） ＝ 勤怠Utilを使用して選択肢用の時間マップを取得
+		attendanceForm.setHourMap(attendanceUtil.setHourMap());
+		// 勤怠FORM．分マップ（選択肢） ＝ 勤怠Utilを使用して選択肢用の分マップを取得
+		attendanceForm.setMinuteMap(attendanceUtil.setMinuteMap());
 
-		//分マップ
-		LinkedHashMap<Integer, String> minuteMap = new LinkedHashMap<>();
-		minuteMap.put(null, "");
-		//[loop] 初期値i=0; i<60; i++ この60は60分
-		for (int i = 0; i < 60; i++) {
-			minuteMap.put(i, String.format("%02d", i));
-		}
 
 		// 途中退校している場合のみ設定
 		if (loginUserDto.getLeaveDate() != null) {
@@ -259,32 +246,29 @@ public class StudentAttendanceService {
 			//開始時間
 			dailyAttendanceForm
 					.setTrainingStartTime(attendanceManagementDto.getTrainingStartTime());
-			//Task.29 天野 開始時間を時間と分に分割してセット
-			//分割するために時間を文字列に変更
+			//Task.26  開始時間を時間と分に分割してセット
+			//分割するために出勤時間を文字列に変更
 			String timeString = attendanceManagementDto.getTrainingStartTime();
-			//timeStringに文字が入っているときだけ動かす(時)
+			dailyAttendanceForm.setTrainingStartTime(timeString);
+			//timeStringに文字が入っているときだけ動かす
 			if (timeString != null && !timeString.equals("")) {
-				int startHour = Integer.parseInt(timeString.substring(0, 2));
-				dailyAttendanceForm.setTrainingStartTimeHour(startHour);
-
-				//timeStringに文字が入っているときだけ動かす(分)
-				int startMinute = Integer.parseInt(timeString.substring(0, 2));
-				dailyAttendanceForm.setTrainingStartTimeMinute(startMinute);
+				//勤怠Utilを使用して出勤時間の時間を抜き出す
+				dailyAttendanceForm.setTrainingStartTimeHour(attendanceUtil.getHour(timeString));
+				//勤怠Utilを使用して出勤時間の分を抜き出す
+				dailyAttendanceForm.setTrainingStartTimeMinute(attendanceUtil.getMinute(timeString));
 			}
 
 			//終了時間
 			dailyAttendanceForm.setTrainingEndTime(attendanceManagementDto.getTrainingEndTime());
-			//Task.29 天野 終了時間を時間と分に分割してセット
-			//分割するために時間を文字列に変更
-			timeString = attendanceManagementDto.getTrainingStartTime();
-			//timeStringに文字が入っているときだけ動かす(時)
+			//Task.26  終了時間を時間と分に分割してセット
+			//分割するために退勤時間を文字列に変更
+			timeString = attendanceManagementDto.getTrainingEndTime();
+			//timeStringに文字が入っているときだけ動かす
 			if (timeString != null && !timeString.equals("")) {
-				int endHour = Integer.parseInt(timeString.substring(0, 2));
-				dailyAttendanceForm.setTrainingEndTimeHour(endHour);
-
-				//timeStringに文字が入っているときだけ動かす(分)
-				int endMinute = Integer.parseInt(timeString.substring(0, 2));
-				dailyAttendanceForm.setTrainingEndTimeMinute(endMinute);
+				//勤怠Utilを使用して退勤時間の時間を抜き出す
+				dailyAttendanceForm.setTrainingEndTimeHour(attendanceUtil.getHour(timeString));
+				//勤怠Utilを使用して出勤時間の分を抜き出す
+				dailyAttendanceForm.setTrainingEndTimeMinute(attendanceUtil.getMinute(timeString));
 			}
 
 			if (attendanceManagementDto.getBlankTime() != null) {
@@ -354,6 +338,11 @@ public class StudentAttendanceService {
 			tStudentAttendance.setTrainingEndTime(trainingEndTime.getFormattedString());
 			// 中抜け時間
 			tStudentAttendance.setBlankTime(dailyAttendanceForm.getBlankTime());
+			//Task.26 天野 勤怠FORM．中抜け時間（選択肢） 勤怠Utilを使用して選択肢用の中抜け時間マップを取得
+			attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
+			//勤怠FORM．時間マップ（選択肢） 勤怠Utilを使用して選択肢用の時間マップを取得
+			attendanceForm.setHourMap(attendanceUtil.setHourMap());
+
 			// 遅刻早退ステータス
 			if ((trainingStartTime != null || trainingEndTime != null)
 					&& !dailyAttendanceForm.getStatusDispName().equals("欠席")) {
