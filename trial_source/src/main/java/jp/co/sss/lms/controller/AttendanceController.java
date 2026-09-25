@@ -20,7 +20,6 @@ import jp.co.sss.lms.util.Constants;
  * 勤怠管理コントローラ
  * 
  * @author 東京ITスクール
- * @author 天野沙紀
  */
 @Controller
 @RequestMapping("/attendance")
@@ -30,7 +29,7 @@ public class AttendanceController {
 	private StudentAttendanceService studentAttendanceService;
 	@Autowired
 	private LoginUserDto loginUserDto;
-	
+
 	/**
 	 * 勤怠管理画面 初期表示
 	 * @param lmsUserId
@@ -52,7 +51,7 @@ public class AttendanceController {
 		//サービスクラスからnotEnterCheckメソッドを呼び出す
 		Boolean notEnterFlg = studentAttendanceService.notEnterCheck();
 		//サービスクラスででた結果をスコープに保存
-		model.addAttribute("notEnterFlg" , notEnterFlg);
+		model.addAttribute("notEnterFlg", notEnterFlg);
 
 		return "attendance/detail";
 	}
@@ -139,6 +138,8 @@ public class AttendanceController {
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
 	public String complete(AttendanceForm attendanceForm, Model model, BindingResult result)
 			throws ParseException {
+		//Task.26 天野 出勤／退勤時間をhh:mm形式に変換
+		studentAttendanceService.formatConversion(attendanceForm);
 
 		// 更新
 		String message = studentAttendanceService.update(attendanceForm);

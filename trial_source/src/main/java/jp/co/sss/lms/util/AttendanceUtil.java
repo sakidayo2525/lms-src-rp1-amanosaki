@@ -147,4 +147,59 @@ public class AttendanceUtil {
 		return false;
 	}
 
+	/**
+	 * 時間マップの作成
+	 * @author 天野
+	 */
+	public LinkedHashMap<Integer, String> setHourMap() {
+		LinkedHashMap<Integer, String> hourMap = new LinkedHashMap<>();
+		//時間マップに{null,""}を追加する
+		hourMap.put(null, "");
+		//[loop] 初期値i=0; i<24; i++ この24は24時間
+		for (int i = 0; i < 24; i++) {
+			//時間マップに{i,String.format("%02d", i)}を追加する。
+			hourMap.put(i, String.format("%02d", i));
+		}
+		return hourMap;
+	}
+
+	/**
+	 * 分マップの作成
+	 * @author 天野
+	 */
+	//分マップ
+	public LinkedHashMap<Integer, String> setMinuteMap() {
+		LinkedHashMap<Integer, String> minuteMap = new LinkedHashMap<>();
+		minuteMap.put(null, "");
+		//[loop] 初期値i=0; i<60; i++ この60は60分
+		for (int i = 0; i < 60; i++) {
+			minuteMap.put(i, String.format("%02d", i));
+		}
+		return minuteMap;
+	}
+	
+	/**
+	 * 時刻文字列から「時」を抜き出す
+	 * @param timeStr "09:15" 形式の文字列
+	 * @return 時の数値
+	 */
+	public Integer getHour(String timeString) {
+			if (timeString != null && !timeString.equals("")) {
+				return Integer.parseInt(timeString.substring(0, 2));
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * 時刻文字列から「分」を抜き出す
+	 * @param timeStr "09:15" 形式の文字列
+	 * @return 分の数値
+	 */
+	public Integer getMinute(String timeString) {
+		if (timeString != null && !timeString.equals("")) {
+			return Integer.parseInt(timeString.substring(3, 5));
+		}
+		return null;
+	}
 }
