@@ -148,7 +148,7 @@ public class AttendanceUtil {
 	}
 
 	/**
-	 * 時間マップの作成
+	 * Task.26 時間マップの作成
 	 * @author 天野
 	 */
 	public LinkedHashMap<Integer, String> setHourMap() {
@@ -164,7 +164,7 @@ public class AttendanceUtil {
 	}
 
 	/**
-	 * 分マップの作成
+	 * Task.26 分マップの作成
 	 * @author 天野
 	 */
 	//分マップ
